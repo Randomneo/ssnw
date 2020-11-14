@@ -11,7 +11,7 @@ class LocalConfig(object):
         password = os.environ.get('POSTGRES_PASSWORD')
         db = os.environ.get('POSTGRES_DB')
         port = os.environ.get('POSTGRES_PORT', 5432)
-        return f'postgresql://{user}:{password}@db:{port}/{db}'
+        return f'postgresql://{user}:{password}@database:{port}/{db}'
 
 
 configs = {
