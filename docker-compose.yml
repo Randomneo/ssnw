@@ -1,0 +1,25 @@
+version: "3.7"
+
+services:
+  backend:
+    build: ./src/
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./src:/opt/project
+    command: "flask run --reload -h 0.0.0.0"
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+
+  database:
+    image: postgres:12
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
