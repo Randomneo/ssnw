@@ -2,6 +2,8 @@ import re
 from flask import request
 from flask.views import MethodView
 from marshmallow import ValidationError
+
+from .decorators import login_required
 from ..db import db
 
 
@@ -66,6 +68,7 @@ def ModelListView(model):
                 query = filter.apply(query, model)
             return query
 
+        @login_required
         def get(self):
             schema = model.__schema__(many=True)
             list_name = getattr(model, '__list_name__', f'{model.__name__.lower()}s')

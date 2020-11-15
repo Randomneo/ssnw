@@ -5,4 +5,5 @@ ENV PYTHONBUFFERED 1
 COPY . /opt/project
 WORKDIR /opt/project
 
-RUN pip install -r requirments.txt
+RUN pip install -U pip
+RUN pip install -r requirments.txt -U --no-cache

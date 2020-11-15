@@ -1,6 +1,7 @@
 from flask_alembic import Alembic
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_bcrypt import Bcrypt
 from marshmallow import ValidationError
 from sqlalchemy import MetaData, String
 
@@ -15,6 +16,7 @@ convention = {
 metadata = MetaData(naming_convention=convention)
 db = SQLAlchemy(metadata=metadata)
 alembic = Alembic()
+bcrypt = Bcrypt()
 ma = Marshmallow()
 
 
@@ -48,6 +50,6 @@ db.Column = Column
 
 
 def init(app):
-    extensions = [alembic, db, ma]
+    extensions = [alembic, db, bcrypt, ma]
     for extension in extensions:
         extension.init_app(app)

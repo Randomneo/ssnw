@@ -2,8 +2,19 @@ import os
 
 
 class LocalConfig(object):
+    use_env = [
+        'jwt_expiration_seconds',
+    ]
     DEBUG = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+    def __init__(self):
+        for var in self.use_env:
+            setattr(self, var.upper(), os.environ.get(var.upper()))
+
+    @property
+    def JWT_SECRET(self):
+        return os.environ.get('JWT_SECRET').encode('utf-8')
 
     @property
     def SQLALCHEMY_DATABASE_URI(self):
