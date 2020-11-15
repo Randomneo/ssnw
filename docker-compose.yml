@@ -14,6 +14,7 @@ services:
       - ./src:/opt/project
     command: "flask run --reload -h 0.0.0.0"
     environment:
+      PYTHONUNBUFFERED: 1
       <<: *default-env
 
   adminer:
