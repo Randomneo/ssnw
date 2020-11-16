@@ -56,7 +56,7 @@ class LoginView(MethodView):
         login_schema = LoginSchema()
         user_input = login_schema.load(data=request.data)
         user = db.session.query(User).filter(User.login == user_input.get('login')).first()
-        if not bcrypt.check_password_hash(user.password, user_input.get('password')):
+        if not user or not bcrypt.check_password_hash(user.password, user_input.get('password')):
             raise ValidationError('Unable to login')
         jwt_exp_sec = current_app.config['JWT_EXPIRATION_SECONDS']
         data = {
