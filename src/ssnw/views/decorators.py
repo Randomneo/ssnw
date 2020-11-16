@@ -5,7 +5,7 @@ from marshmallow import ValidationError
 
 def login_required(func):
     def call(*args, **kwargs):
-        if request.user is None:
+        if not hasattr(request, 'user') or request.user is None:
             return Response(
                 status=401,
                 response=json.dumps("Unable to authorize"),

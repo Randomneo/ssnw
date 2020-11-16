@@ -14,13 +14,9 @@ class LikeListView(ModelListView(Like)):
     pass
 
 
-class LikePostView(MethodView):
-
-    @login_required
-    @input_wrap
-    def post(self, id):
-        like_schema = LikeSchema()
-        post = db.session.query(Post).filter(Post.id == id).first()
+class LikeAction(object):
+    def get_like(self, post_id):
+        post = db.session.query(Post).filter(Post.id == post_id).first()
         if post is None:
             raise ValidationError('Post not found')
         like = db.session.query(Like)\
@@ -29,11 +25,32 @@ class LikePostView(MethodView):
                 Like.user_id == request.user.id,
             )\
             .first()
+        return like
+
+
+class LikePostView(MethodView, LikeAction):
+
+    @login_required
+    @input_wrap
+    def post(self, post_id):
+        like_schema = LikeSchema()
+        like = self.get_like(post_id)
         if like is not None:
-            db.session.delete(like)
-            db.session.commit()
-            return {"message": "Like sucessfully deleted"}
-        like = Like(user_id=request.user.id, post_id=post.id)
+            raise ValidationError('Post already liked')
+        like = Like(user_id=request.user.id, post_id=post_id)
         db.session.add(like)
+        db.session.commit()
+        return like_schema.dump(like)
+
+
+class DisLikePostView(MethodView, LikeAction):
+    @login_required
+    @input_wrap
+    def post(self, post_id):
+        like_schema = LikeSchema()
+        like = self.get_like(post_id)
+        if like is None:
+            raise ValidationError('Post not yet liked')
+        db.session.delete(like)
         db.session.commit()
         return like_schema.dump(like)
