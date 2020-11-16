@@ -18,4 +18,10 @@ class UserSchema(ma.SQLAlchemyAutoSchema, LoginSchema):
     email = fields.Email(validate=validate.Length(max=128))
 
 
+class UserFilterSchema(UserSchema):
+    login = fields.String(validate=[])
+    password = fields.String(validate=[])
+
+
 User.__schema__ = UserSchema
+User.__filter_schema__ = UserFilterSchema

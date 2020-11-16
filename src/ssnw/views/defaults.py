@@ -1,4 +1,5 @@
 import re
+import json
 from flask import request
 from flask.views import MethodView
 from marshmallow import ValidationError
@@ -13,6 +14,9 @@ class Filter(object):
     bulk_actions = (
         'in', 'notin',
     )
+    allowed_actions = [
+        'in', 'notin', 'eq', 'ne', 'gt', 'ge', 'lt', 'le', 'like'
+    ]
 
     def bulk_value(func):
         def call(self, model_field, value):
@@ -24,6 +28,8 @@ class Filter(object):
     def __init__(self, arg):
         arg_string, self.value = arg
         self.field, action = arg_string.split(':')
+        if action not in self.allowed_actions:
+            raise ValidationError(f'Not allowed filter action {action}')
         self.action = f'__{action or "eq"}__'
         for action_method in self.bulk_actions:
             setattr(
@@ -37,7 +43,7 @@ class Filter(object):
 
     def apply(self, query, model):
         model_field = getattr(model, self.field)
-        schema = model.__schema__()
+        schema = getattr(model, '__filter_schema__', model.__schema__)()
         schema_field = schema.fields.get(self.field)
         try:
             value = schema_field.deserialize(self.value)
@@ -77,7 +83,7 @@ def ModelListView(model):
                     list_name: schema.dump(self.query().all())
                 }
             except ValidationError as e:
-                response = e.messages
+                response = json.dumps(e.messages)
             return response
 
     return ModelListView

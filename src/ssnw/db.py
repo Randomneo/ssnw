@@ -34,9 +34,9 @@ class Column(db.Column):
 
     def validate_operation(type):
         def decorate(func):
-            def call(*args, **kwargs):
-                if isinstance(type, String):
-                    return func(*args, **kwargs)
+            def call(self, *args, **kwargs):
+                if isinstance(self.type, type):
+                    return func(self, *args, **kwargs)
                 raise ValidationError(f'{type.__name__} not support {func.__name__.strip("_")} operation')
             return call
         return decorate
